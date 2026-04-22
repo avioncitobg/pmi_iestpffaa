@@ -1,25 +1,52 @@
 <?php
+require_once '../modelos/Persona.php';
 
-class PersonaController{
-    // metodos o funciones
+$persona = new Persona();
 
-    //crud de registro
-    public function store($_POST){
-        //  if(!is_numeric( $_POST['edad'])){
-        //     return[
-        //         'success' => false,
-        //         'message' => 'el valor de edad tiene que ser numerico'
-        //     ]
-        //  }
-        $data = [];
-        $data['edad'] = $_POST['edad'];
-        $data['nombre'] = $_POST['nombre']; 
-        $this->registrarPersona($data);
-    }
+$op = $_GET['op'] ?? '';
 
+switch ($op) {
 
-    //crud update
-    public function update($_POST){
-       
-    }
+    case 'listar':
+        echo json_encode($persona->listarPersona());
+        break;
+
+    case 'guardar':
+        $nombre = $_POST['nombre'] ?? '';
+        $edad = $_POST['edad'] ?? '';
+
+        $result = $persona->insertar($nombre, $edad);
+
+        echo json_encode([
+            "status" => $result,
+            "message" => $result ? "Guardado correctamente" : "Error al guardar"
+        ]);
+        break;
+
+    case 'actualizar':
+        $id = $_POST['id'] ?? 0;
+        $nombre = $_POST['nombre'] ?? '';
+        $edad = $_POST['edad'] ?? '';
+        $result = $persona->actualizar($id, $nombre, $edad);
+
+        echo json_encode([
+            "status" => $result,
+            "message" => $result ? "Actualizado correctamente" : "Error al actualizar"
+        ]);
+        break;
+
+    case 'eliminar':
+        $id = $_POST['id'] ?? 0;
+
+        $result = $persona->eliminar($id);
+
+        echo json_encode([
+            "status" => $result,
+            "message" => $result ? "Eliminado correctamente" : "Error al eliminar"
+        ]);
+        break;
+
+    default:
+        echo json_encode(["error" => "Operación no válida"]);
+        break;
 }
